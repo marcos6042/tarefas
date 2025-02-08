@@ -11,6 +11,9 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, senha TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS empresas (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, cnpj TEXT)''')
 c.execute('''CREATE TABLE IF NOT EXISTS tarefas (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, descricao TEXT, empresa_id INTEGER, usuario_id INTEGER, status TEXT DEFAULT 'Pendente', FOREIGN KEY(empresa_id) REFERENCES empresas(id), FOREIGN KEY(usuario_id) REFERENCES usuarios(id))''')
+# Criar usuário admin padrão se não existir
+senha_admin = hashlib.sha256("admin123".encode()).hexdigest()
+c.execute("INSERT INTO usuarios (nome, senha) SELECT 'admin', ? WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE nome='admin')", (senha_admin,))
 conn.commit()
 
 # Função para hash de senha
