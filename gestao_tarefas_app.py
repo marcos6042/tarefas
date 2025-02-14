@@ -75,7 +75,7 @@ paginas = {
     "Cadastro Categoria": ["Nome da Categoria", "categorias"],
     "Cadastro Subcategoria": ["Categoria (Nome da Categoria)", "Nome da Subcategoria", "Periodicidade (Mensal, Trimestral, Anual, Avulso)", "subcategorias"],
     "Cadastro Usuário": ["Nome do Usuário", "E-mail", "usuarios"],
-    "Nova Tarefa": ["Filial", "Setor", "Subcategoria", "Nome da Tarefa", "Competência", "Vencimento", "Usuário (Múltipla Escolha)", "tarefas"]
+    "Nova Tarefa": ["Filial", "Setor", "Subcategoria", "Nome da Tarefa", "Competência (MM/AAAA)", "Vencimento", "Usuário (Múltipla Escolha)", "tarefas"]
 }
 
 if st.session_state.page in paginas:
@@ -84,23 +84,19 @@ if st.session_state.page in paginas:
     lista = paginas[st.session_state.page][-1]
     st.subheader(st.session_state.page)
     
-    if st.session_state.page == "Cadastro Filial":
-        empresas_existentes = [empresa["Razão Social"] for empresa in st.session_state.empresas]
+    if st.session_state.page == "Nova Tarefa":
+        filiais_existentes = [f"{filial['Empresa (Razão Social)']} - {filial['UF']}" for filial in st.session_state.filiais]
+        setores_existentes = [setor["Nome do Setor"] for setor in st.session_state.setores]
+        usuarios_existentes = [usuario["Nome do Usuário"] for usuario in st.session_state.usuarios]
+        
         dados = {
-            "Empresa (Razão Social)": st.selectbox("Empresa", empresas_existentes) if empresas_existentes else "Nenhuma empresa cadastrada",
-            "CNPJ": st.text_input("CNPJ"),
-            "Município": st.text_input("Município"),
-            "UF": st.text_input("UF"),
-            "Tipo": st.text_input("Tipo"),
-            "Inscrição Estadual": st.text_input("Inscrição Estadual"),
-            "Senha Sefaz": st.text_input("Senha Sefaz")
-        }
-    elif st.session_state.page == "Cadastro Subcategoria":
-        categorias_existentes = [categoria["Nome da Categoria"] for categoria in st.session_state.categorias]
-        dados = {
-            "Categoria (Nome da Categoria)": st.selectbox("Categoria", categorias_existentes) if categorias_existentes else "Nenhuma categoria cadastrada",
-            "Nome da Subcategoria": st.text_input("Nome da Subcategoria"),
-            "Periodicidade": st.selectbox("Periodicidade", ["Mensal", "Trimestral", "Anual", "Avulso"])
+            "Filial": st.selectbox("Filial", filiais_existentes) if filiais_existentes else "Nenhuma filial cadastrada",
+            "Setor": st.selectbox("Setor", setores_existentes) if setores_existentes else "Nenhum setor cadastrado",
+            "Subcategoria": st.text_input("Subcategoria"),
+            "Nome da Tarefa": st.text_input("Nome da Tarefa"),
+            "Competência (MM/AAAA)": st.text_input("Competência", placeholder="MM/AAAA"),
+            "Vencimento": st.date_input("Vencimento"),
+            "Usuário (Múltipla Escolha)": st.multiselect("Usuário", usuarios_existentes) if usuarios_existentes else "Nenhum usuário cadastrado"
         }
     else:
         dados = {campo: st.text_input(campo) for campo in campos}
