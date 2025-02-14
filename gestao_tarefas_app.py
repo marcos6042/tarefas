@@ -37,6 +37,29 @@ if st.session_state.page == "menu":
     col1, col2, col3 = st.columns(3)
     
     with col1:
+        st.header("📂 Cadastros")
+        if st.button("Cadastrar Empresa"):
+            st.session_state.page = "Cadastro Empresa"
+        if st.button("Cadastrar Filial"):
+            st.session_state.page = "Cadastro Filial"
+        if st.button("Cadastrar Setor"):
+            st.session_state.page = "Cadastro Setor"
+        if st.button("Cadastrar Categoria"):
+            st.session_state.page = "Cadastro Categoria"
+        if st.button("Cadastrar Subcategoria"):
+            st.session_state.page = "Cadastro Subcategoria"
+        if st.button("Cadastrar Usuário"):
+            st.session_state.page = "Cadastro Usuário"
+    
+    with col2:
+        st.header("✅ Tarefas")
+        if st.button("Criar Nova Tarefa"):
+            st.session_state.page = "Nova Tarefa"
+        if st.button("Baixar Tarefa"):
+            st.session_state.page = "Baixa de Tarefa"
+    
+    with col3:
+        st.header("📊 Relatórios")
         if st.button("Visualizar Kanban"):
             st.session_state.page = "Kanban"
             st.rerun()
