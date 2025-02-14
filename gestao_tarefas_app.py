@@ -34,7 +34,7 @@ if "tarefas" not in st.session_state:
 if st.session_state.page == "menu":
     st.subheader("Menu Principal")
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         st.header("📂 Cadastros")
@@ -52,18 +52,13 @@ if st.session_state.page == "menu":
             st.session_state.page = "Cadastro Usuário"
     
     with col2:
-        st.header("📑 CND")
-        if st.button("Consultar CND Estadual"):
-            st.session_state.page = "Consultar CND Estadual"
-    
-    with col3:
         st.header("✅ Tarefas")
         if st.button("Criar Nova Tarefa"):
             st.session_state.page = "Nova Tarefa"
         if st.button("Baixar Tarefa"):
             st.session_state.page = "Baixa de Tarefa"
     
-    with col4:
+    with col3:
         st.header("📊 Relatórios")
         if st.button("Visualizar Kanban"):
             st.session_state.page = "Kanban"
@@ -75,7 +70,7 @@ if st.session_state.page == "menu":
 # Páginas de Cadastro e Tarefas
 paginas = {
     "Cadastro Empresa": ["Razão Social", "CNPJ", "empresas"],
-    "Cadastro Filial": ["Empresa (Razão Social)", "CNPJ", "Tipo", "Município", "UF", "Inscrição Estadual", "Senha Sefaz", "filiais"],
+    "Cadastro Filial": ["Empresa (Razão Social)", "CNPJ", "Município", "UF", "Tipo", "Inscrição Estadual", "Senha Sefaz", "filiais"],
     "Cadastro Setor": ["Nome do Setor", "setores"],
     "Cadastro Categoria": ["Nome da Categoria", "categorias"],
     "Cadastro Subcategoria": ["Categoria (Nome da Categoria)", "Nome da Subcategoria", "Periodicidade (Mensal, Trimestral, Anual, Avulso)", "subcategorias"],
@@ -91,7 +86,15 @@ if st.session_state.page in paginas:
     
     if st.session_state.page == "Cadastro Filial":
         empresas_existentes = [empresa["Razão Social"] for empresa in st.session_state.empresas]
-        dados = {"Empresa (Razão Social)": st.selectbox("Empresa", empresas_existentes) if empresas_existentes else "Nenhuma empresa cadastrada"}
+        dados = {
+            "Empresa (Razão Social)": st.selectbox("Empresa", empresas_existentes) if empresas_existentes else "Nenhuma empresa cadastrada",
+            "CNPJ": st.text_input("CNPJ"),
+            "Município": st.text_input("Município"),
+            "UF": st.text_input("UF"),
+            "Tipo": st.text_input("Tipo"),
+            "Inscrição Estadual": st.text_input("Inscrição Estadual"),
+            "Senha Sefaz": st.text_input("Senha Sefaz")
+        }
     elif st.session_state.page == "Cadastro Subcategoria":
         categorias_existentes = [categoria["Nome da Categoria"] for categoria in st.session_state.categorias]
         dados = {
