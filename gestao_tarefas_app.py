@@ -1,7 +1,6 @@
 
 import streamlit as st
 import pandas as pd
-import requests
 import matplotlib.pyplot as plt
 from datetime import datetime
 
@@ -40,6 +39,7 @@ if st.session_state.page == "menu":
     with col1:
         if st.button("Visualizar Kanban"):
             st.session_state.page = "Kanban"
+            st.rerun()
 
 if st.session_state.page == "Kanban":
     st.subheader("Quadro Kanban")
@@ -59,51 +59,58 @@ if st.session_state.page == "Kanban":
         vencimento = tarefa.get("Vencimento")
         baixa = tarefa.get("Baixa", False)
         if isinstance(vencimento, str):
-            vencimento = datetime.strptime(vencimento, "%Y-%m-%d").date()
+            try:
+                vencimento = datetime.strptime(vencimento, "%Y-%m-%d").date()
+            except ValueError:
+                continue
         
-        if not baixa:
-            if vencimento >= hoje:
-                categorias["À Vencer"].append(tarefa)
+        if vencimento:
+            if not baixa:
+                if vencimento >= hoje:
+                    categorias["À Vencer"].append(tarefa)
+                else:
+                    categorias["Atrasado"].append(tarefa)
             else:
-                categorias["Atrasado"].append(tarefa)
-        else:
-            if vencimento >= hoje:
-                categorias["Entregue no Prazo"].append(tarefa)
-            else:
-                categorias["Entregue em Atraso"].append(tarefa)
+                if vencimento >= hoje:
+                    categorias["Entregue no Prazo"].append(tarefa)
+                else:
+                    categorias["Entregue em Atraso"].append(tarefa)
     
     with col1:
         st.subheader("À Vencer")
         for t in categorias["À Vencer"]:
-            st.write(f"{t['Nome da Tarefa']}")
+            st.write(f"{t.get('Nome da Tarefa', 'Sem Nome')}")
     
     with col2:
         st.subheader("Atrasado")
         for t in categorias["Atrasado"]:
-            st.write(f"{t['Nome da Tarefa']}")
+            st.write(f"{t.get('Nome da Tarefa', 'Sem Nome')}")
     
     with col3:
         st.subheader("Entregue no Prazo")
         for t in categorias["Entregue no Prazo"]:
-            st.write(f"{t['Nome da Tarefa']}")
+            st.write(f"{t.get('Nome da Tarefa', 'Sem Nome')}")
     
     with col4:
         st.subheader("Entregue em Atraso")
         for t in categorias["Entregue em Atraso"]:
-            st.write(f"{t['Nome da Tarefa']}")
+            st.write(f"{t.get('Nome da Tarefa', 'Sem Nome')}")
     
     # Criando gráficos
     status_counts = {key: len(value) for key, value in categorias.items()}
     
     st.subheader("Gráficos de Tarefas")
     
-    fig, ax = plt.subplots()
-    ax.bar(status_counts.keys(), status_counts.values())
-    ax.set_ylabel("Quantidade de Tarefas")
-    ax.set_title("Distribuição das Tarefas no Kanban")
-    st.pyplot(fig)
-    
-    fig, ax = plt.subplots()
-    ax.pie(status_counts.values(), labels=status_counts.keys(), autopct='%1.1f%%', startangle=90)
-    ax.set_title("Proporção das Tarefas no Kanban")
-    st.pyplot(fig)
+    if any(status_counts.values()):
+        fig, ax = plt.subplots()
+        ax.bar(status_counts.keys(), status_counts.values())
+        ax.set_ylabel("Quantidade de Tarefas")
+        ax.set_title("Distribuição das Tarefas no Kanban")
+        st.pyplot(fig)
+        
+        fig, ax = plt.subplots()
+        ax.pie(status_counts.values(), labels=status_counts.keys(), autopct='%1.1f%%', startangle=90)
+        ax.set_title("Proporção das Tarefas no Kanban")
+        st.pyplot(fig)
+    else:
+        st.write("Nenhuma tarefa cadastrada para exibir nos gráficos.")
